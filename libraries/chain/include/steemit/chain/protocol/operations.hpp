@@ -4,7 +4,7 @@
 
 namespace steemit { namespace chain {
 
-   /** NOTE: do not change the order of any operations prior to the virtual operations 
+   /** NOTE: do not change the order of any operations prior to the virtual operations
     * or it will trigger a hardfork.
     */
    typedef fc::static_variant<
@@ -30,28 +30,38 @@ namespace steemit { namespace chain {
 
             pow_operation,
 
-            custom_operation, 
+            custom_operation,
 
             report_over_production_operation,
 
             custom_json_operation,
 
             /// virtual operations below this point
-            fill_convert_request_operation, 
-            comment_reward_operation, 
-            curate_reward_operation, 
-            liquidity_reward_operation, 
-            interest_operation, 
-            fill_vesting_withdraw_operation, 
-            fill_order_operation 
+            fill_convert_request_operation,
+            comment_reward_operation,
+            curate_reward_operation,
+            liquidity_reward_operation,
+            interest_operation,
+            fill_vesting_withdraw_operation,
+            fill_order_operation
 
          > operation;
+
+   template< typename Ops >
+   void abstract_operation_get_required_authorities( const Ops& op,
+                                                     flat_set< string >& active,
+                                                     flat_set< string >& owner,
+                                                     flat_set< string >& posting,
+                                                     vector< authority >& other );
 
    void operation_get_required_authorities( const operation& op,
                                             flat_set<string>& active,
                                             flat_set<string>& owner,
                                             flat_set<string>& posting,
                                             vector<authority>&  other );
+
+   template< typename Ops >
+   void abstract_operation_validate( const Ops& op );
 
    void operation_validate( const operation& op );
 
@@ -67,6 +77,12 @@ namespace steemit { namespace chain {
 } } // steemit::chain
 
 namespace fc {
+    template< typename Ops >
+    void abstract_operation_to_variant( const Ops& var, fc::variant& vo );
+
+    template< typename Ops >
+    void abstract_operation_from_variant( const fc::variant& var, Ops& vo );
+
     void to_variant( const steemit::chain::operation& var,  fc::variant& vo );
     void from_variant( const fc::variant& var,  steemit::chain::operation& vo );
 }
